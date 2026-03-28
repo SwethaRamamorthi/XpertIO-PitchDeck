@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XpertDev AI — Local Business Pitch Deck</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06060f;--surf:#0d0d20;--blue:#00c8f8;--purple:#9b5cf6;--pink:#f06292;--green:#00e5a0;--amber:#f5a623;
+  --white:#eeeeff;--muted:#8b8ba7;--dim:rgba(238,238,255,.65);--border:rgba(255,255,255,.07);
+  --fd:'Outfit',sans-serif;--fb:'Outfit',sans-serif;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:var(--fb);color:var(--white);cursor:none}
+#cur{position:fixed;width:9px;height:9px;background:var(--blue);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s;mix-blend-mode:screen}
+#cur-r{position:fixed;width:32px;height:32px;border:1px solid rgba(0,200,248,.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .16s ease}
+#deck{position:fixed;inset:0}
+canvas#c{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.5}
+
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:clamp(20px,3.5vh,48px) clamp(24px,5.5vw,76px);opacity:0;pointer-events:none;overflow:hidden}
+.slide.active{opacity:1;pointer-events:all}
+.slide-content{position:relative;z-index:2;width:100%;height:100%;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+
+.slide::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0}
+.s1::before{background:radial-gradient(ellipse 70% 70% at 70% 50%,rgba(0,200,248,.07),transparent 70%),radial-gradient(ellipse 50% 50% at 15% 80%,rgba(155,92,246,.08),transparent 60%)}
+.s2::before{background:radial-gradient(ellipse 60% 60% at 85% 15%,rgba(240,98,146,.06),transparent 60%),radial-gradient(ellipse 50% 50% at 10% 60%,rgba(0,200,248,.05),transparent 60%)}
+.s3::before{background:radial-gradient(ellipse 70% 70% at 50% 100%,rgba(0,229,160,.06),transparent 60%)}
+.s4::before{background:radial-gradient(ellipse 70% 60% at 0% 50%,rgba(155,92,246,.07),transparent 60%)}
+.s5::before{background:radial-gradient(ellipse 60% 60% at 100% 0%,rgba(0,200,248,.07),transparent 60%),radial-gradient(ellipse 50% 50% at 15% 100%,rgba(240,98,146,.05),transparent 60%)}
+.s6::before{background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(0,229,160,.05),transparent 70%)}
+.s7::before{background:radial-gradient(ellipse 70% 60% at 100% 50%,rgba(155,92,246,.08),transparent 60%)}
+.s8::before{background:radial-gradient(ellipse 60% 70% at 25% 25%,rgba(0,200,248,.06),transparent 60%)}
+.s9::before{background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(245,166,35,.05),transparent 70%)}
+.s10::before{background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(155,92,246,.07),transparent 70%),radial-gradient(ellipse 50% 50% at 80% 80%,rgba(0,200,248,.05),transparent 60%)}
+.s11::before{background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(0,200,248,.04),rgba(155,92,246,.04) 50%,transparent 70%)}
+.s12::before{background:radial-gradient(ellipse 90% 90% at 50% 50%,rgba(0,200,248,.04),rgba(155,92,246,.04) 60%,transparent 80%)}
+
+.slide::after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.009) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.009) 1px,transparent 1px);background-size:55px 55px}
+
+/* NAV */
+.sn{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;margin-bottom:clamp(10px,2vh,28px)}
+.brand{font-family:var(--fd);font-size:.82rem;font-weight:700;letter-spacing:.07em;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-transform:uppercase}
+.sc{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.stag{font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);padding:.2rem .6rem;border:1px solid rgba(0,200,248,.2);border-radius:3px;background:rgba(0,200,248,.04)}
+
+/* TYPE */
+.eye{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:clamp(6px,1vh,12px);flex-shrink:0}
+.eye::before{content:'';width:16px;height:1px;background:var(--blue);flex-shrink:0}
+h1{font-family:var(--fd);font-size:clamp(2.4rem,4.5vw,4.4rem);font-weight:700;line-height:1.06;letter-spacing:-.03em;margin-bottom:clamp(14px,2vh,26px);flex-shrink:0}
+h2{font-family:var(--fd);font-size:clamp(1.7rem,3vw,3rem);font-weight:700;line-height:1.1;letter-spacing:-.025em;margin-bottom:clamp(12px,1.5vh,22px);flex-shrink:0}
+.lead{font-size:clamp(1.05rem,1.4vw,1.25rem);color:var(--dim);line-height:1.7;font-weight:300;flex-shrink:0}
+.g{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.gp{background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.gg{background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ga{background:linear-gradient(135deg,var(--amber),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* CARD */
+.card{background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);border-top:1px solid rgba(255,255,255,.15);border-radius:14px;padding:clamp(18px,2.5vh,30px) clamp(20px,2.5vw,34px);transition:border-color .3s,transform .3s;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.card:hover{border-color:rgba(0,200,248,.3);transform:translateY(-2px)}
+
+/* PILLS */
+.pill{display:inline-flex;align-items:center;gap:5px;padding:.22rem .7rem;border-radius:100px;font-size:.67rem;font-weight:500;border:1px solid;flex-shrink:0}
+.pb{border-color:rgba(0,200,248,.25);color:var(--blue);background:rgba(0,200,248,.06)}
+.pp{border-color:rgba(155,92,246,.25);color:var(--purple);background:rgba(155,92,246,.06)}
+.pg{border-color:rgba(0,229,160,.25);color:var(--green);background:rgba(0,229,160,.06)}
+.pk{border-color:rgba(240,98,146,.25);color:var(--pink);background:rgba(240,98,146,.06)}
+.pa{border-color:rgba(245,166,35,.25);color:var(--amber);background:rgba(245,166,35,.06)}
+
+/* LAYOUTS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2vw,32px)}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(10px,1.6vw,20px)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1.3vw,16px)}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(7px,1.1vw,13px)}
+.grow{flex:1;min-height:0}
+.vd{width:1px;background:var(--border);align-self:stretch;flex-shrink:0}
+
+/* STAT */
+.stn{font-family:var(--fd);font-size:clamp(2.2rem,3.8vw,3.8rem);font-weight:700;line-height:1;letter-spacing:-.04em}
+.stl{font-size:.8rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:6px}
+
+/* PROGRESS BAR */
+.pbw{margin-bottom:clamp(7px,1vh,12px)}
+.pbr{display:flex;justify-content:space-between;margin-bottom:4px}
+.pbn{font-size:.76rem;color:var(--dim)}
+.pbv{font-size:.7rem;color:var(--muted);font-family:var(--fd)}
+.pbt{height:3px;background:rgba(255,255,255,.06);border-radius:100px;overflow:hidden}
+.pbf{height:100%;border-radius:100px;width:0;transition:width 1.4s cubic-bezier(.16,1,.3,1)}
+
+/* CHECK */
+.chk{display:flex;gap:10px;align-items:flex-start;margin-bottom:clamp(7px,1vh,12px)}
+.chk-d{width:15px;height:15px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:.55rem}
+.chk-t{font-size:clamp(.75rem,1vw,.87rem);line-height:1.6;color:var(--dim)}
+.chk-t strong{color:var(--white);font-weight:500}
+
+/* ROI */
+.roi{background:linear-gradient(135deg,rgba(0,200,248,.08),rgba(155,92,246,.04));border:1px solid rgba(0,200,248,.15);border-top:1px solid rgba(0,200,248,.25);border-radius:14px;padding:clamp(18px,2.5vh,30px);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.roi-r{display:flex;justify-content:space-between;align-items:center;font-size:1rem;padding:10px 0}
+.roi-r+.roi-r{border-top:1px solid var(--border)}
+
+/* BIZ */
+.biz{display:flex;flex-direction:column;align-items:center;gap:10px;padding:clamp(14px,2vh,24px) 10px;background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);border-top:1px solid rgba(255,255,255,.15);border-radius:12px;text-align:center;font-size:.85rem;font-weight:500;color:var(--muted);transition:all .3s;cursor:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.biz:hover{border-color:rgba(0,200,248,.3);color:var(--blue);transform:translateY(-2px)}
+.biz span{font-size:clamp(1.5rem,2.5vw,2rem)}
+
+/* TEAM */
+.tc{background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);border-top:1px solid rgba(255,255,255,.15);border-radius:16px;padding:clamp(22px,3vh,36px);display:flex;flex-direction:column;align-items:center;text-align:center;transition:all .4s;gap:clamp(10px,1.5vh,18px);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.tc:hover{border-color:rgba(155,92,246,.4);transform:translateY(-3px)}
+.av{width:clamp(64px,7.5vw,88px);height:clamp(64px,7.5vw,88px);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:clamp(1.2rem,1.8vw,1.6rem);font-weight:700;flex-shrink:0;border:2px solid}
+.av1{background:linear-gradient(135deg,rgba(0,200,248,.15),rgba(155,92,246,.15));border-color:rgba(0,200,248,.35)}
+.av2{background:linear-gradient(135deg,rgba(155,92,246,.15),rgba(240,98,146,.15));border-color:rgba(155,92,246,.35)}
+.av3{background:linear-gradient(135deg,rgba(0,229,160,.15),rgba(0,200,248,.15));border-color:rgba(0,229,160,.35)}
+.tn{font-family:var(--fd);font-size:clamp(1.1rem,1.5vw,1.35rem);font-weight:700;line-height:1.2}
+.tr{font-size:clamp(.85rem,1.1vw,1rem);color:var(--muted);line-height:1.4}
+.tb{font-size:clamp(.85rem,1.1vw,1rem);color:var(--dim);line-height:1.6}
+
+/* SUMMARY */
+.sr{display:flex;align-items:flex-start;gap:14px;padding:clamp(14px,2vh,20px);background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);border-top:1px solid rgba(255,255,255,.15);border-radius:12px;transition:all .3s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.sr:hover{border-color:rgba(0,200,248,.3);transform:translateY(-2px)}
+.si{font-size:clamp(1.3rem,2vw,1.8rem);flex-shrink:0;margin-top:2px}
+.st{font-size:clamp(.9rem,1.2vw,1.05rem);color:var(--dim);line-height:1.6}
+.st strong{color:var(--white);font-weight:600}
+
+/* BUTTONS */
+.btn-g{display:inline-flex;align-items:center;gap:7px;padding:clamp(.65rem,1.1vh,.9rem) clamp(1.3rem,2.2vw,2rem);background:linear-gradient(135deg,var(--blue),var(--purple));border:none;border-radius:100px;color:#fff;font-family:var(--fb);font-size:.87rem;font-weight:500;cursor:none;letter-spacing:.02em;animation:glP 3s ease infinite}
+.btn-o{display:inline-flex;align-items:center;gap:7px;padding:clamp(.65rem,1.1vh,.9rem) clamp(1.3rem,2.2vw,2rem);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:100px;color:var(--dim);font-family:var(--fb);font-size:.87rem;cursor:none;transition:all .3s}
+.btn-o:hover{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.07)}
+@keyframes glP{0%,100%{box-shadow:0 0 22px rgba(0,200,248,.26),0 0 44px rgba(155,92,246,.1)}50%{box-shadow:0 0 40px rgba(0,200,248,.42),0 0 80px rgba(155,92,246,.2)}}
+
+/* NAV BAR */
+#nb{position:fixed;bottom:clamp(14px,2vh,26px);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,rgba(10,10,24,.85),rgba(20,20,35,.85));backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.1);border-top:1px solid rgba(255,255,255,.2);border-radius:100px;padding:7px 14px;z-index:500;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.dn{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.15);cursor:none;transition:all .25s}
+.dn.on{background:var(--blue);width:16px;border-radius:3px}
+.nb-btn{background:none;border:none;cursor:none;color:rgba(255,255,255,.35);font-size:.95rem;transition:color .2s;padding:0 2px;display:flex;align-items:center}
+.nb-btn:hover{color:var(--white)}
+.nb-sep{width:1px;height:13px;background:var(--border)}
+
+/* TRANSITIONS */
+.slide{transform:translateX(55px)}
+.slide.active{transform:translateX(0);transition:opacity .42s cubic-bezier(.16,1,.3,1),transform .42s cubic-bezier(.16,1,.3,1)}
+.slide.prev{transform:translateX(-55px);transition:opacity .32s ease,transform .32s ease}
+
+/* STAGGER */
+.a{opacity:0;transform:translateY(16px);transition:opacity .52s cubic-bezier(.16,1,.3,1),transform .52s cubic-bezier(.16,1,.3,1)}
+.slide.active .a{opacity:1;transform:none}
+.slide.active .a:nth-child(1){transition-delay:.04s}
+.slide.active .a:nth-child(2){transition-delay:.09s}
+.slide.active .a:nth-child(3){transition-delay:.15s}
+.slide.active .a:nth-child(4){transition-delay:.21s}
+.slide.active .a:nth-child(5){transition-delay:.27s}
+.slide.active .a:nth-child(6){transition-delay:.33s}
+.slide.active .a:nth-child(7){transition-delay:.39s}
+.slide.active .a:nth-child(8){transition-delay:.45s}
+
+body::after{content:'';position:fixed;inset:0;z-index:9000;opacity:.016;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+</style>
+</head>
+<body>
+<div id="cur"></div><div id="cur-r"></div>
+<canvas id="c"></canvas>
+<div id="deck">
+
+<!-- S1 COVER -->
+<div class="slide s1 active" data-s="0">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">Pitch Deck · 2026</div><div class="sc">01 / 12</div></div>
+  <div class="grow" style="display:flex;flex-direction:column;justify-content:center;">
+    <div class="eye a">AI for Local Business · Coimbatore</div>
+    <h1 class="a">Bringing <span class="g">Intelligent</span><br>Technology to<br><span class="gp">Local Businesses</span></h1>
+    <p class="lead a" style="max-width:520px;margin-bottom:clamp(14px,2vh,26px)">XpertDev AI helps local shops, restaurants, clinics, and service businesses go digital, automate operations, and grow — with AI tools built for real people.</p>
+    <div class="a" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:clamp(14px,2vh,26px)">
+      <div class="pill pb"> Local Business</div><div class="pill pp"> AI-Powered</div><div class="pill pa"> Digital Marketing</div><div class="pill pg"> Fast Results</div>
+    </div>
+  </div>
+  <div class="a" style="display:flex;gap:clamp(14px,2.5vw,40px);border-top:1px solid var(--border);padding-top:clamp(12px,1.8vh,22px);flex-wrap:wrap">
+    <div><div class="stn"><span class="g">50+</span></div><div class="stl">Businesses Serving</div></div>
+    <div class="vd"></div>
+    <div><div class="stn"><span class="gp">3–5×</span></div><div class="stl">Avg. ROI</div></div>
+    <div class="vd"></div>
+    <div><div class="stn"><span class="gg">₹</span></div><div class="stl">Affordable Pricing</div></div>
+    <div class="vd"></div>
+    <div><div class="stn"><span class="ga">5</span></div><div class="stl">Core Services</div></div>
+  </div>
+</div></div>
+
+<!-- S2 PROBLEM -->
+<div class="slide s2" data-s="1">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">The Problem</div><div class="sc">02 / 12</div></div>
+  <div class="eye a">What's Holding Local Businesses Back</div>
+  <h2 class="a">Local businesses are <span class="gp">left behind</span> in the digital revolution</h2>
+  <div class="g3 grow a" style="gap:clamp(12px,1.8vw,22px);margin-bottom:clamp(10px,1.5vh,16px)">
+    <div class="card" style="display:flex;flex-direction:column;gap:clamp(10px,1.5vh,16px)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.8rem"></div>
+        <div style="font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--pink);font-weight:600">Problem 01</div>
+      </div>
+      <div style="font-family:var(--fd);font-size:clamp(.85rem,1.2vw,1rem);font-weight:600;line-height:1.3">Still Running on Paper & WhatsApp</div>
+      <p style="font-size:clamp(.72rem,.95vw,.82rem);color:var(--muted);line-height:1.7;flex:1">Bookings, inventory, and customer records managed manually — losing hours every week to avoidable admin work. No audit trail. No visibility. Just WhatsApp threads and Excel files that no one can trust.</p>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:auto">
+        <div class="pill pk" style="font-size:.6rem">🕐 10+ hrs lost/week</div>
+        <div class="pill pk" style="font-size:.6rem">📉 Error-prone</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:clamp(10px,1.5vh,16px)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.8rem"></div>
+        <div style="font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--pink);font-weight:600">Problem 02</div>
+      </div>
+      <div style="font-family:var(--fd);font-size:clamp(.85rem,1.2vw,1rem);font-weight:600;line-height:1.3">No Digital Presence or Online Sales</div>
+      <p style="font-size:clamp(.72rem,.95vw,.82rem);color:var(--muted);line-height:1.7;flex:1">73% of local businesses have no functional website. Customers search online, find competitors, and never walk through your door — because you're invisible on Google, Instagram, and Maps.</p>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:auto">
+        <div class="pill pk" style="font-size:.6rem">🔍 Not on Google</div>
+        <div class="pill pk" style="font-size:.6rem">📱 No social presence</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:clamp(10px,1.5vh,16px)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.8rem">💸</div>
+        <div style="font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--pink);font-weight:600">Problem 03</div>
+      </div>
+      <div style="font-family:var(--fd);font-size:clamp(.85rem,1.2vw,1rem);font-weight:600;line-height:1.3">Tech Feels Expensive & Complicated</div>
+      <p style="font-size:clamp(.72rem,.95vw,.82rem);color:var(--muted);line-height:1.7;flex:1">Most AI tools are built for enterprise IT teams. A local restaurant or salon owner doesn't have a tech budget — or time to learn. Existing vendors over-promise and under-deliver at steep prices.</p>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:auto">
+        <div class="pill pk" style="font-size:.6rem">❌ Complex to use</div>
+        <div class="pill pk" style="font-size:.6rem"> Overpriced</div>
+      </div>
+    </div>
+  </div>
+  <div class="a" style="padding:clamp(11px,1.6vh,16px) clamp(14px,2vw,22px);background:rgba(240,98,146,.05);border:1px solid rgba(240,98,146,.12);border-radius:9px;display:flex;align-items:center;gap:13px">
+    <span style="font-size:1.3rem"></span>
+    <p style="font-size:clamp(.74rem,.98vw,.86rem);color:var(--dim);line-height:1.6"><strong style="color:var(--white)">The Opportunity:</strong> India has 63 million SMEs. Less than 12% have adopted digital tooling. The gap is massive — and XpertDev AI is purpose-built to close it, affordably and fast.</p>
+  </div>
+</div></div>
+
+<!-- S3 WHO WE SERVE -->
+<div class="slide s3" data-s="2">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">Our Market</div><div class="sc">03 / 12</div></div>
+  <div class="eye a">Target Customers</div>
+  <h2 class="a">We serve the <span class="g">backbone</span> of the local economy</h2>
+  <div class="g5 a" style="margin-bottom:clamp(12px,1.8vh,22px)">
+    <div class="biz"><span></span>Retail Shops</div><div class="biz"><span></span>Restaurants</div><div class="biz"><span></span>Clinics</div><div class="biz"><span></span>Salons & Spas</div><div class="biz"><span></span>Gyms</div>
+    <div class="biz"><span></span>Contractors</div><div class="biz"><span></span>Coaching</div><div class="biz"><span></span>Auto Services</div><div class="biz"><span></span>Grocers</div><div class="biz"><span></span>Guest Houses</div>
+  </div>
+  <div class="g3 a grow" style="gap:clamp(12px,1.8vw,22px)">
+    <div style="text-align:center;padding:clamp(14px,2.2vh,28px);background:linear-gradient(135deg,rgba(0,200,248,.06),rgba(0,200,248,.01));border:1px solid rgba(0,200,248,.15);border-top:1px solid rgba(0,200,248,.3);border-radius:13px;display:flex;flex-direction:column;justify-content:center;gap:8px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.3)">
+      <div class="stn"><span class="g">63M</span></div>
+      <div class="stl">SMEs in India</div>
+      <p style="font-size:clamp(.66rem,.88vw,.74rem);color:var(--muted);line-height:1.6;margin-top:4px">From tiny tea stalls to local clinics — India's SME backbone is the world's largest untapped digital market.</p>
+    </div>
+    <div style="text-align:center;padding:clamp(14px,2.2vh,28px);background:linear-gradient(135deg,rgba(155,92,246,.06),rgba(155,92,246,.01));border:1px solid rgba(155,92,246,.15);border-top:1px solid rgba(155,92,246,.3);border-radius:13px;display:flex;flex-direction:column;justify-content:center;gap:8px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.3)">
+      <div class="stn"><span class="gp">₹8T</span></div>
+      <div class="stl">SME Market Size</div>
+      <p style="font-size:clamp(.66rem,.88vw,.74rem);color:var(--muted);line-height:1.6;margin-top:4px">Eight trillion rupees in annual SME revenue — yet less than half has any digital infrastructure supporting it.</p>
+    </div>
+    <div style="text-align:center;padding:clamp(14px,2.2vh,28px);background:linear-gradient(135deg,rgba(0,229,160,.06),rgba(0,229,160,.01));border:1px solid rgba(0,229,160,.15);border-top:1px solid rgba(0,229,160,.3);border-radius:13px;display:flex;flex-direction:column;justify-content:center;gap:8px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.3)">
+      <div class="stn"><span class="gg">88%</span></div>
+      <div class="stl">Still Undigitized</div>
+      <p style="font-size:clamp(.66rem,.88vw,.74rem);color:var(--muted);line-height:1.6;margin-top:4px">Over 55 million local businesses have no website, no automation, and no digital marketing — yet. That's our market.</p>
+    </div>
+  </div>
+</div></div>
+
+<!-- S4 SOLUTION -->
+<div class="slide s4" data-s="3">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">Our Solution</div><div class="sc">04 / 12</div></div>
+  <div class="eye a">What We Do</div>
+  <h2 class="a">One partner. Every digital need your business has.</h2>
+  <div class="g2 grow">
+    <div style="display:flex;flex-direction:column;gap:clamp(5px,.9vh,10px)" class="a">
+      <div class="chk"><div class="chk-d"></div><div class="chk-t"><strong>Custom Business Websites</strong> — Mobile-first, fast, built to convert visitors into paying customers.</div></div>
+      <div class="chk"><div class="chk-d"></div><div class="chk-t"><strong>AI Chatbots & WhatsApp Automation</strong> — Auto-reply queries, take bookings, send reminders 24/7.</div></div>
+      <div class="chk"><div class="chk-d"></div><div class="chk-t"><strong>Smart Inventory & Billing Systems</strong> — Replace Excel sheets with a dashboard that thinks with you.</div></div>
+      <div class="chk"><div class="chk-d"></div><div class="chk-t"><strong>Online Ordering & Booking Apps</strong> — Let customers order or schedule directly from their phone.</div></div>
+      <div class="chk"><div class="chk-d"></div><div class="chk-t"><strong>Digital Marketing</strong> — Google Ads, Meta/Instagram campaigns, SEO, and content that drives real footfall.</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:clamp(9px,1.3vh,14px)" class="a">
+      <div class="roi">
+        <div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:8px">Why it works</div>
+        <div class="roi-r"><span style="color:var(--dim)">Setup time</span><span style="color:var(--green);font-weight:500">1–2 weeks</span></div>
+        <div class="roi-r"><span style="color:var(--dim)">Monthly cost</span><span style="color:var(--green);font-weight:500">₹2,000 – ₹15,000</span></div>
+        <div class="roi-r"><span style="color:var(--dim)">Training needed</span><span style="color:var(--green);font-weight:500">Zero coding</span></div>
+        <div class="roi-r"><span style="color:var(--dim)">Language support</span><span style="color:var(--green);font-weight:500">Tamil, Hindi, English</span></div>
+        <div class="roi-r"><span style="color:var(--dim)">Contract</span><span style="color:var(--green);font-weight:500">No lock-in</span></div>
+      </div>
+      <div class="card" style="text-align:center;padding:clamp(11px,1.6vh,18px)">
+        <div style="font-size:1.4rem;margin-bottom:5px"></div>
+        <div style="font-size:clamp(.7rem,.95vw,.8rem);color:var(--muted);line-height:1.6">We walk in, understand your business, and deliver a working solution — not a PowerPoint proposal.</div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- S5 SERVICES -->
+<div class="slide s5" data-s="4">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">Services</div><div class="sc">05 / 12</div></div>
+  <div class="eye a">What We Build</div>
+  <h2 class="a">Our <span class="g">5 Core Services</span></h2>
+  <div class="g5 grow a">
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:2rem"></div>
+      <div style="font-family:var(--fd);font-size:clamp(1rem,1.3vw,1.2rem);font-weight:600;line-height:1.3">Web & App Development</div>
+      <p style="font-size:clamp(.8rem,1.05vw,.95rem);color:var(--muted);line-height:1.6">Business sites, e-commerce, booking apps. React + MERN. Fast. Mobile-first.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;margin-top:8px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--blue);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Sub-second load times</span></div>
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--blue);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Razorpay integration</span></div>
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--blue);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Built-in SEO structure</span></div>
+      </div>
+      <div class="pill pb" style="font-size:.75rem;align-self:flex-start;margin-top:10px">From ₹15,000</div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:2rem"></div>
+      <div style="font-family:var(--fd);font-size:clamp(1rem,1.3vw,1.2rem);font-weight:600;line-height:1.3">AI Chatbots & Auto</div>
+      <p style="font-size:clamp(.8rem,1.05vw,.95rem);color:var(--muted);line-height:1.6">WhatsApp bots, appointment schedulers, and smart follow-ups — no extra staff needed.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;margin-top:8px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--purple);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">24/7 instant replies</span></div>
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--purple);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Lead generation routing</span></div>
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--purple);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Multi-language support</span></div>
+      </div>
+      <div class="pill pp" style="font-size:.75rem;align-self:flex-start;margin-top:10px">From ₹5,000/mo</div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:2rem"></div>
+      <div style="font-family:var(--fd);font-size:clamp(1rem,1.3vw,1.2rem);font-weight:600;line-height:1.3">Business Automation</div>
+      <p style="font-size:clamp(.8rem,1.05vw,.95rem);color:var(--muted);line-height:1.6">Billing, inventory alerts, payroll helpers, and report generation — end-to-end automated.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;margin-top:8px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--green);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Low-stock alerts</span></div>
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--green);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">One-click invoicing</span></div>
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--green);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Attendance tracking</span></div>
+      </div>
+      <div class="pill pg" style="font-size:.75rem;align-self:flex-start;margin-top:10px">From ₹8,000</div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:2rem"></div>
+      <div style="font-family:var(--fd);font-size:clamp(1rem,1.3vw,1.2rem);font-weight:600;line-height:1.3">Data & Analytics</div>
+      <p style="font-size:clamp(.8rem,1.05vw,.95rem);color:var(--muted);line-height:1.6">Sales dashboards, customer insights, and peak-hour analysis in plain language.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;margin-top:8px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--pink);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Footfall tracking</span></div>
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--pink);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Customer retention</span></div>
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--pink);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Profit margin monitoring</span></div>
+      </div>
+      <div class="pill pk" style="font-size:.75rem;align-self:flex-start;margin-top:10px">From ₹4,000/mo</div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px;border-color:rgba(245,166,35,.18)">
+      <div style="font-size:2rem"></div>
+      <div style="font-family:var(--fd);font-size:clamp(1rem,1.3vw,1.2rem);font-weight:600;line-height:1.3">Digital Marketing</div>
+      <p style="font-size:clamp(.8rem,1.05vw,.95rem);color:var(--muted);line-height:1.6">SEO, Google Ads, Instagram/Meta campaigns, and content strategy to drive real footfall.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;margin-top:8px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--amber);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Google Maps ranking</span></div>
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--amber);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Hyper-local Meta Ads</span></div>
+        <div style="display:flex;align-items:start;gap:6px"><span style="color:var(--amber);font-size:.8rem"></span><span style="font-size:clamp(.75rem,.95vw,.85rem);color:var(--dim)">Ad budget optimization</span></div>
+      </div>
+      <div class="pill pa" style="font-size:.75rem;align-self:flex-start;margin-top:10px">From ₹6,000/mo</div>
+    </div>
+  </div>
+  <div class="a" style="margin-top:clamp(7px,1vh,13px);padding:clamp(8px,1.2vh,13px) clamp(12px,1.7vw,18px);border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.02);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px">
+    <span style="font-size:clamp(.7rem,.95vw,.82rem);color:var(--dim)">All services include onboarding, training & 30-day support.</span>
+    <div class="pill pg"> No Lock-in Contracts</div>
+  </div>
+</div></div>
+
+<!-- S6 PROJECTS -->
+<div class="slide s6" data-s="5">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">Case Studies</div><div class="sc">06 / 12</div></div>
+  <div class="eye a">Real Results</div>
+  <h2 class="a">Projects that made a <span class="gg">real difference</span></h2>
+  <div class="g3 grow a">
+    <div class="card" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:2.2rem"></div><div class="pill pg" style="font-size:.7rem">Retail</div></div>
+      <div style="font-family:var(--fd);font-size:clamp(1.1rem,1.4vw,1.35rem);font-weight:600;line-height:1.3">Textile Shop Billing & Inventory</div>
+      <p style="font-size:clamp(.85rem,1.1vw,.95rem);color:var(--muted);line-height:1.6;flex:1">Replaced WhatsApp order tracking with a smart inventory + billing dashboard for a local shop in Coimbatore.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:6px">
+        <div style="font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em">Key Integrations</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="pill pb" style="font-size:.65rem"> Barcode Scanner UI</span><span class="pill pb" style="font-size:.65rem"> Digital Receipts</span><span class="pill pb" style="font-size:.65rem"> Daily SMS Reports</span></div>
+      </div>
+      <div style="padding:14px 18px;background:linear-gradient(135deg,rgba(0,229,160,.06),rgba(0,229,160,.02));border:1px solid rgba(0,229,160,.12);border-radius:9px;margin-top:auto">
+        <div style="font-size:.65rem;color:var(--green);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Result</div>
+        <div style="font-size:clamp(.85rem,1.15vw,1rem);font-weight:500;color:var(--white)">Saved 12 hrs/week · ₹0 billing errors</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:2.2rem"></div><div class="pill pb" style="font-size:.7rem">F&B</div></div>
+      <div style="font-family:var(--fd);font-size:clamp(1.1rem,1.4vw,1.35rem);font-weight:600;line-height:1.3">Restaurant Online Ordering App</div>
+      <p style="font-size:clamp(.85rem,1.1vw,.95rem);color:var(--muted);line-height:1.6;flex:1">Custom ordering website + WhatsApp bot for a local restaurant — removing dependency on expensive aggregators.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:6px">
+        <div style="font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em">Key Integrations</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="pill pp" style="font-size:.65rem"> Live Order Tracking</span><span class="pill pp" style="font-size:.65rem"> Auto-Print to Kitchen</span><span class="pill pp" style="font-size:.65rem"> Menu Management</span></div>
+      </div>
+      <div style="padding:14px 18px;background:linear-gradient(135deg,rgba(0,200,248,.06),rgba(0,200,248,.02));border:1px solid rgba(0,200,248,.12);border-radius:9px;margin-top:auto">
+        <div style="font-size:.65rem;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Result</div>
+        <div style="font-size:clamp(.85rem,1.15vw,1rem);font-weight:500;color:var(--white)">+35% direct orders · Saved 18% commissions</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:2.2rem"></div><div class="pill pp" style="font-size:.7rem">Healthcare</div></div>
+      <div style="font-family:var(--fd);font-size:clamp(1.1rem,1.4vw,1.35rem);font-weight:600;line-height:1.3">Clinic Appointment AI Chatbot</div>
+      <p style="font-size:clamp(.85rem,1.1vw,.95rem);color:var(--muted);line-height:1.6;flex:1">AI chatbot handling bookings, reminders, and FAQ responses for a busy local clinic — 24/7, in Tamil & English.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:6px">
+        <div style="font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em">Key Integrations</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="pill pg" style="font-size:.65rem"> Calendar Sync</span><span class="pill pg" style="font-size:.65rem"> Auto-Reminders</span><span class="pill pg" style="font-size:.65rem"> NLP FAQ Parsing</span></div>
+      </div>
+      <div style="padding:14px 18px;background:linear-gradient(135deg,rgba(155,92,246,.06),rgba(155,92,246,.02));border:1px solid rgba(155,92,246,.12);border-radius:9px;margin-top:auto">
+        <div style="font-size:.65rem;color:var(--purple);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Result</div>
+        <div style="font-size:clamp(.85rem,1.15vw,1rem);font-weight:500;color:var(--white)">60% fewer calls · Zero patient no-shows</div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- S7 WHY US -->
+<div class="slide s7" data-s="6">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">Our Edge</div><div class="sc">07 / 12</div></div>
+  <div class="eye a">Why XpertDev AI</div>
+  <h2 class="a">We're not an agency. We're your <span class="g">tech co-founder.</span></h2>
+  <div class="g2 grow">
+    <div style="display:flex;flex-direction:column;gap:clamp(10px,1.4vh,16px);flex:1" class="a">
+      <div class="card" style="display:flex;gap:11px;align-items:flex-start;flex:1">
+        <div style="font-size:1.4rem;flex-shrink:0"></div>
+        <div><div style="font-family:var(--fd);font-size:clamp(.82rem,1.15vw,.95rem);font-weight:600;margin-bottom:6px">Built for Local Businesses</div><p style="font-size:clamp(.7rem,.93vw,.8rem);color:var(--muted);line-height:1.7">Every tool is designed around how local businesses actually work — not repurposed enterprise software forced onto small shops. We study your workflow before we write a single line of code.</p></div>
+      </div>
+      <div class="card" style="display:flex;gap:11px;align-items:flex-start;flex:1">
+        <div style="font-size:1.4rem;flex-shrink:0"></div>
+        <div><div style="font-family:var(--fd);font-size:clamp(.82rem,1.15vw,.95rem);font-weight:600;margin-bottom:6px">Launch in 1–2 Weeks</div><p style="font-size:clamp(.7rem,.93vw,.8rem);color:var(--muted);line-height:1.7">Our pre-built component library and AI tooling means your solution goes live fast — no six-month delays. You see results in days, not quarters, with immediate, measurable ROI on every rupee spent.</p></div>
+      </div>
+      <div class="card" style="display:flex;gap:11px;align-items:flex-start;flex:1">
+        <div style="font-size:1.4rem;flex-shrink:0"></div>
+        <div><div style="font-family:var(--fd);font-size:clamp(.82rem,1.15vw,.95rem);font-weight:600;margin-bottom:6px">We Speak Your Language</div><p style="font-size:clamp(.7rem,.93vw,.8rem);color:var(--muted);line-height:1.7">Tamil, Hindi, English — our tools and support work in the language your team uses. We do on-site visits across Coimbatore and surrounding districts so you never feel alone in the process.</p></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:clamp(11px,1.5vh,18px);flex:1" class="a">
+      <div class="roi" style="flex:1;display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:4px">Expertise Depth</div>
+        <div class="pbw"><div class="pbr"><span class="pbn">Web & App Development</span><span class="pbv">96%</span></div><div class="pbt"><div class="pbf" data-w="96" style="background:linear-gradient(to right,var(--blue),var(--purple))"></div></div></div>
+        <div class="pbw"><div class="pbr"><span class="pbn">AI & Automation</span><span class="pbv">93%</span></div><div class="pbt"><div class="pbf" data-w="93" style="background:linear-gradient(to right,var(--purple),var(--pink))"></div></div></div>
+        <div class="pbw"><div class="pbr"><span class="pbn">Digital Marketing</span><span class="pbv">90%</span></div><div class="pbt"><div class="pbf" data-w="90" style="background:linear-gradient(to right,var(--amber),var(--pink))"></div></div></div>
+        <div class="pbw"><div class="pbr"><span class="pbn">Data & Analytics</span><span class="pbv">88%</span></div><div class="pbt"><div class="pbf" data-w="88" style="background:linear-gradient(to right,var(--green),var(--blue))"></div></div></div>
+        <div class="pbw"><div class="pbr"><span class="pbn">Business Operations</span><span class="pbv">85%</span></div><div class="pbt"><div class="pbf" data-w="85" style="background:linear-gradient(to right,var(--green),var(--amber))"></div></div></div>
+        <div style="margin-top:auto;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-family:var(--fd);font-size:clamp(1.4rem,2.4vw,2rem);font-weight:700"><span class="g">100%</span></div><div style="font-size:.6rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase">Client Satisfaction</div></div>
+          <div style="text-align:right"><div style="font-family:var(--fd);font-size:clamp(1.4rem,2.4vw,2rem);font-weight:700"><span class="gp">2</span></div><div style="font-size:.6rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase">Projects Delivered</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- S8 TECH STACK -->
+<div class="slide s8" data-s="7">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">Technology</div><div class="sc">08 / 12</div></div>
+  <div class="eye a">Our Tech Stack</div>
+  <h2 class="a">Modern tools. <span class="gg">Proven results.</span></h2>
+  <div class="g2 grow" style="gap:clamp(16px,2.5vw,36px)">
+    <div style="display:flex;flex-direction:column;gap:clamp(14px,2vh,22px);flex:1" class="a">
+      <div class="card" style="padding:clamp(12px,1.8vh,18px)">
+        <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:9px;padding-bottom:7px;border-bottom:1px solid var(--border)">Frontend & Backend</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px">
+          <div class="pill pb" style="font-size:.65rem">⚛️ React</div><div class="pill pb" style="font-size:.65rem">🟢 Node.js</div><div class="pill pb" style="font-size:.65rem">▲ Next.js</div><div class="pill pb" style="font-size:.65rem">🍃 MongoDB</div><div class="pill pb" style="font-size:.65rem"> Express</div><div class="pill pb" style="font-size:.65rem">🐘 PostgreSQL</div>
+        </div>
+        <p style="font-size:clamp(.66rem,.9vw,.76rem);color:var(--muted);line-height:1.65;margin-top:9px">Scalable, mobile-first web and app solutions built on proven, modern stacks that load fast and convert visitors into customers.</p>
+      </div>
+      <div class="card" style="padding:clamp(12px,1.8vh,18px)">
+        <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);margin-bottom:9px;padding-bottom:7px;border-bottom:1px solid var(--border)">AI & Automation</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px">
+          <div class="pill pp" style="font-size:.65rem">🐍 Python</div><div class="pill pp" style="font-size:.65rem">🔗 LangChain</div><div class="pill pp" style="font-size:.65rem"> OpenAI API</div><div class="pill pp" style="font-size:.65rem">📲 WhatsApp API</div><div class="pill pp" style="font-size:.65rem">🧠 Hugging Face</div>
+        </div>
+        <p style="font-size:clamp(.66rem,.9vw,.76rem);color:var(--muted);line-height:1.65;margin-top:9px">Custom-trained AI chatbots, intelligent automation workflows, and voice/text tools that work in Tamil, Hindi, and English.</p>
+      </div>
+      <div class="card" style="padding:clamp(12px,1.8vh,18px)">
+        <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:9px;padding-bottom:7px;border-bottom:1px solid var(--border)">Digital Marketing & Cloud</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px">
+          <div class="pill pa" style="font-size:.65rem"> Meta Ads</div><div class="pill pa" style="font-size:.65rem">🔍 Google Ads</div><div class="pill pa" style="font-size:.65rem">📈 SEO</div><div class="pill pg" style="font-size:.65rem">☁️ AWS</div><div class="pill pg" style="font-size:.65rem">🐳 Docker</div><div class="pill pg" style="font-size:.65rem">🔥 Firebase</div>
+        </div>
+        <p style="font-size:clamp(.66rem,.9vw,.76rem);color:var(--muted);line-height:1.65;margin-top:9px">Full digital marketing suite — from ad management to SEO — combined with enterprise-grade cloud infrastructure that scales with your business.</p>
+      </div>
+    </div>
+    <div class="roi a" style="display:flex;flex-direction:column;gap:clamp(12px,1.7vh,18px);flex:1">
+      <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:2px">Why Our Tech Stack Wins for Local Business</div>
+      <div style="display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:6px"></div>
+        <div><p style="font-size:clamp(.72rem,.97vw,.82rem);color:var(--dim);line-height:1.65"><strong style="color:var(--white)">PWA technology</strong> — apps that install on any phone without the App Store. No download friction for your customers.</p></div>
+      </div>
+      <div style="display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:6px"></div>
+        <div><p style="font-size:clamp(.72rem,.97vw,.82rem);color:var(--dim);line-height:1.65"><strong style="color:var(--white)">WhatsApp-first automation</strong> — your customers are already on WhatsApp. We make that your most powerful business tool.</p></div>
+      </div>
+      <div style="display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--purple);flex-shrink:0;margin-top:6px"></div>
+        <div><p style="font-size:clamp(.72rem,.97vw,.82rem);color:var(--dim);line-height:1.65"><strong style="color:var(--white)">Offline-capable dashboards</strong> — works seamlessly even in low-connectivity zones. No internet, no problem.</p></div>
+      </div>
+      <div style="display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:6px"></div>
+        <div><p style="font-size:clamp(.72rem,.97vw,.82rem);color:var(--dim);line-height:1.65"><strong style="color:var(--white)">Tamil & Hindi UI</strong> — interfaces your team can actually use, in the language they think in. Zero learning curve.</p></div>
+      </div>
+      <div style="display:flex;gap:11px;align-items:flex-start;padding:10px 0">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--pink);flex-shrink:0;margin-top:6px"></div>
+        <div><p style="font-size:clamp(.72rem,.97vw,.82rem);color:var(--dim);line-height:1.65"><strong style="color:var(--white)">No vendor lock-in</strong> — every system we build is yours. Open standards, exportable data, full ownership from day one.</p></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- S9 MEET THE TEAM -->
+<div class="slide s9" data-s="8">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">The Team</div><div class="sc">09 / 12</div></div>
+  <div class="eye a">The People Behind It</div>
+  <h2 class="a">Meet our <span class="ga">founding team</span></h2>
+  <div class="g3 grow a" style="gap:clamp(14px,2.2vw,28px)">
+    <div class="tc">
+      <div class="av av1">SP</div>
+      <div>
+        <div class="tn">Sanjay Panneerselvan</div>
+        <div class="tr" style="color:var(--blue);margin-top:3px;font-weight:500">Founder & CEO</div>
+      </div>
+      <div style="width:100%;height:1px;background:var(--border)"></div>
+      <p class="tb">Visionary leader driving XpertDev AI's strategy and mission to digitise local businesses across India. Expert in AI systems, product architecture, and scaling tech ventures from Coimbatore.</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">
+        <div class="pill pb" style="font-size:.58rem"> AI Strategy</div><div class="pill pb" style="font-size:.58rem"> Product</div>
+      </div>
+    </div>
+    <div class="tc">
+      <div class="av av2">SR</div>
+      <div>
+        <div class="tn">Swetha Ramamoorthy</div>
+        <div class="tr" style="color:var(--purple);margin-top:3px;font-weight:500">Co-Founder & Head of Operations</div>
+      </div>
+      <div style="width:100%;height:1px;background:var(--border)"></div>
+      <p class="tb">Operational backbone of XpertDev AI — ensuring every client project is delivered on time, on budget, with exceptional quality. Specialist in process design and team execution.</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">
+        <div class="pill pp" style="font-size:.58rem"> Operations</div><div class="pill pp" style="font-size:.58rem"> Delivery</div>
+      </div>
+    </div>
+    <div class="tc">
+      <div class="av av3">AM</div>
+      <div>
+        <div class="tn">Akshaya Manian</div>
+        <div class="tr" style="color:var(--green);margin-top:3px;font-weight:500">Co-Founder & CXO</div>
+      </div>
+      <div style="width:100%;height:1px;background:var(--border)"></div>
+      <p class="tb">Champions customer experience across every touchpoint — from first contact to post-launch support. Drives growth, client relationships, and digital marketing strategy at XpertDev AI.</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">
+        <div class="pill pg" style="font-size:.58rem"> CX</div><div class="pill pg" style="font-size:.58rem"> Growth</div>
+      </div>
+    </div>
+  </div>
+  <div class="a" style="margin-top:clamp(8px,1.2vh,15px);padding:clamp(8px,1.2vh,13px) clamp(12px,1.7vw,18px);border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.02);display:flex;align-items:center;gap:11px">
+    <span style="font-size:1rem"></span>
+    <p style="font-size:clamp(.7rem,.95vw,.82rem);color:var(--dim)">Based in <strong style="color:var(--white)">Coimbatore, Tamil Nadu</strong> — deeply rooted in the local business community we serve.</p>
+  </div>
+</div></div>
+
+<!-- S10 VISION -->
+<div class="slide s10" data-s="9">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">Our Roadmap</div><div class="sc">10 / 12</div></div>
+  <div class="eye a">Where We're Going</div>
+  <div class="a" style="font-family:var(--fd);font-size:clamp(1.1rem,2vw,1.9rem);font-weight:700;line-height:1.22;letter-spacing:-.025em;margin-bottom:clamp(8px,1.2vh,16px);max-width:700px">"Every local business in India deserves the <span class="g">same digital power</span> as a multinational — and we're making that happen."
+  </div>
+  <p class="lead a" style="margin-bottom:clamp(10px,1.5vh,18px);max-width:560px">Starting in Coimbatore, expanding across Tamil Nadu, reaching every tier-2 and tier-3 city in India.</p>
+  <div class="g3 grow a" style="margin-bottom:clamp(10px,1.5vh,18px)">
+    <div style="padding:clamp(18px,2.5vh,30px);background:linear-gradient(135deg,rgba(0,200,248,.06),rgba(0,200,248,.01));border:1px solid rgba(0,200,248,.18);border-top:1px solid rgba(0,200,248,.3);border-radius:14px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between"><div style="font-family:var(--fd);font-size:clamp(1.8rem,3vw,2.4rem);font-weight:700"><span class="g">2025</span></div><div class="pill pb" style="font-size:.65rem;border-color:rgba(0,200,248,.4)">Started </div></div>
+      <div style="font-family:var(--fd);font-size:clamp(1rem,1.4vw,1.2rem);font-weight:600">Foundation & Launch</div>
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;border-top:1px solid rgba(0,200,248,.15);padding-top:12px">
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--blue)">Q1</span> Coimbatore Operations Launch</div>
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--blue)">Q2</span> Secure 15+ Recurring Clients</div>
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--blue)">Q3</span> Build Core Agency Team</div>
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--blue)">Q4</span> First AI Client Integrations</div>
+      </div>
+    </div>
+    <div style="padding:clamp(18px,2.5vh,30px);background:linear-gradient(135deg,rgba(155,92,246,.06),rgba(155,92,246,.01));border:1px solid rgba(155,92,246,.18);border-top:1px solid rgba(155,92,246,.3);border-radius:14px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between"><div style="font-family:var(--fd);font-size:clamp(1.8rem,3vw,2.4rem);font-weight:700"><span class="gp">2026</span></div><div class="pill pp" style="font-size:.65rem;border-color:rgba(155,92,246,.4)">Speed Up </div></div>
+      <div style="font-family:var(--fd);font-size:clamp(1rem,1.4vw,1.2rem);font-weight:600">Scale & Automate</div>
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;border-top:1px solid rgba(155,92,246,.15);padding-top:12px">
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--purple)">Q1</span> Launch AI SaaS Platform</div>
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--purple)">Q2</span> Hit 100 Paying Clients</div>
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--purple)">Q3</span> Expand across Tamil Nadu</div>
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--purple)">Q4</span> Introduce DIY Funnels</div>
+      </div>
+    </div>
+    <div style="padding:clamp(18px,2.5vh,30px);background:linear-gradient(135deg,rgba(0,229,160,.06),rgba(0,229,160,.01));border:1px solid rgba(0,229,160,.18);border-top:1px solid rgba(0,229,160,.3);border-radius:14px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between"><div style="font-family:var(--fd);font-size:clamp(1.8rem,3vw,2.4rem);font-weight:700"><span class="gg">2027</span></div><div class="pill pg" style="font-size:.65rem;border-color:rgba(0,229,160,.4)">Target </div></div>
+      <div style="font-family:var(--fd);font-size:clamp(1rem,1.4vw,1.2rem);font-weight:600">Pan-India Expansion</div>
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;border-top:1px solid rgba(0,229,160,.15);padding-top:12px">
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--green)">Q1</span> 500+ Active Subscribers</div>
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--green)">Q2</span> Pan-India Outreach</div>
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--green)">Q3</span> Become Go-To SME Partner</div>
+        <div style="font-size:clamp(.8rem,1.1vw,.95rem);color:var(--dim);display:flex;gap:8px"><span style="color:var(--green)">Q4</span> Unveil XpertDev Ecosystem</div>
+      </div>
+    </div>
+  </div>
+  <div class="a" style="display:flex;gap:12px;flex-wrap:wrap">
+    <div class="pill pb" style="font-size:.7rem"> Coimbatore Base</div><div class="pill pp" style="font-size:.7rem"> Tamil Nadu Expansion</div><div class="pill pg" style="font-size:.7rem"> Pan-India by 2027</div><div class="pill pa" style="font-size:.7rem"> 500 Customers Goal</div>
+  </div>
+</div></div>
+
+<!-- S11 SUMMARY -->
+<div class="slide s11" data-s="10">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">Summary</div><div class="sc">11 / 12</div></div>
+  <div class="eye a">Everything We Do — In One Slide</div>
+  <h2 class="a">XpertDev AI <span class="g">at a glance</span></h2>
+  <div class="g2 grow a" style="margin-bottom:clamp(12px,2vh,20px)">
+    <div class="sr" style="flex-direction:column;gap:8px;align-items:flex-start;padding:clamp(16px,2vh,24px)">
+      <div style="display:flex;align-items:center;gap:12px"><div class="si" style="font-size:1.8rem"></div><div class="st" style="font-size:clamp(.95rem,1.2vw,1.1rem)"><strong>Web & App Development</strong></div></div>
+      <div class="st" style="font-size:clamp(.8rem,1vw,.95rem);padding-left:2px">Mobile-first websites, e-commerce stores & booking apps. Fast delivery, zero bloat, engineered to convert local traffic into loyal customers.</div>
+    </div>
+    <div class="sr" style="flex-direction:column;gap:8px;align-items:flex-start;padding:clamp(16px,2vh,24px)">
+      <div style="display:flex;align-items:center;gap:12px"><div class="si" style="font-size:1.8rem"></div><div class="st" style="font-size:clamp(.95rem,1.2vw,1.1rem)"><strong>AI Chatbots & Automation</strong></div></div>
+      <div class="st" style="font-size:clamp(.8rem,1vw,.95rem);padding-left:2px">Intelligent 24/7 WhatsApp bots handling appointment bookings, customer FAQS, and order management effortlessly without requiring extra staff.</div>
+    </div>
+    <div class="sr" style="flex-direction:column;gap:8px;align-items:flex-start;padding:clamp(16px,2vh,24px)">
+      <div style="display:flex;align-items:center;gap:12px"><div class="si" style="font-size:1.8rem"></div><div class="st" style="font-size:clamp(.95rem,1.2vw,1.1rem)"><strong>Business Automation</strong></div></div>
+      <div class="st" style="font-size:clamp(.8rem,1vw,.95rem);padding-left:2px">Replace excel with software. Billing systems, inventory alerts, payroll helpers, and one-click instant reporting.</div>
+    </div>
+    <div class="sr" style="flex-direction:column;gap:8px;align-items:flex-start;border-color:rgba(245,166,35,.22);padding:clamp(16px,2vh,24px)">
+      <div style="display:flex;align-items:center;gap:12px"><div class="si" style="font-size:1.8rem"></div><div class="st" style="font-size:clamp(.95rem,1.2vw,1.1rem)"><strong style="color:var(--amber)">Digital Marketing</strong></div></div>
+      <div class="st" style="font-size:clamp(.8rem,1vw,.95rem);padding-left:2px">Hyper-local Google Ads, Meta/Instagram brand campaigns, ROI-driven SEO, and premium content strategy.</div>
+    </div>
+    <div class="sr" style="flex-direction:column;gap:8px;align-items:flex-start;padding:clamp(16px,2vh,24px)">
+      <div style="display:flex;align-items:center;gap:12px"><div class="si" style="font-size:1.8rem"></div><div class="st" style="font-size:clamp(.95rem,1.2vw,1.1rem)"><strong>Data & Analytics</strong></div></div>
+      <div class="st" style="font-size:clamp(.8rem,1vw,.95rem);padding-left:2px">Sales dashboards, deep customer insights, footfall tracking, & peak-hour analysis presented in plain Tamil, Hindi, or English.</div>
+    </div>
+    <div class="sr" style="flex-direction:column;gap:8px;align-items:flex-start;padding:clamp(16px,2vh,24px)">
+      <div style="display:flex;align-items:center;gap:12px"><div class="si" style="font-size:1.8rem"></div><div class="st" style="font-size:clamp(.95rem,1.2vw,1.1rem)"><strong>End-to-End Partnership</strong></div></div>
+      <div class="st" style="font-size:clamp(.8rem,1vw,.95rem);padding-left:2px">We walk into your store, deeply understand your business operations, train your staff on-site, and permanently stay as your tech partner.</div>
+    </div>
+  </div>
+  <div class="a" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+    <div class="pill pb" style="font-size:.75rem"> Coimbatore-based</div>
+    <div class="pill pg" style="font-size:.75rem"> No lock-in contracts</div>
+    <div class="pill pp" style="font-size:.75rem"> Live in 1–2 weeks</div>
+    <div class="pill pa" style="font-size:.75rem"> Tamil · Hindi · English</div>
+    <div class="pill pk" style="font-size:.75rem"> Affordable pricing</div>
+    <div class="pill pa" style="font-size:.75rem"> Elite Digital Marketing</div>
+  </div>
+</div></div>
+
+<!-- S12 CLOSING CTA -->
+<div class="slide s12" data-s="11">
+<div class="slide-content">
+  <div class="sn a"><div class="brand">XpertDev AI</div><div class="stag">Let's Build</div><div class="sc">12 / 12</div></div>
+  <div class="eye a">Who We Are · What Sets Us Apart</div>
+  <h2 class="a" style="font-size:clamp(1.2rem,2.4vw,2.1rem);margin-bottom:clamp(8px,1.2vh,14px)">Not just a tech vendor —<br><span class="g">your digital growth partner.</span></h2>
+  <div class="g2 grow a" style="gap:clamp(16px,2vw,30px);margin-bottom:clamp(12px,2vh,20px)">
+    <div style="display:flex;flex-direction:column;gap:clamp(10px,1.5vh,16px)">
+      <div style="font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:2px">Who We Are</div>
+      <div class="card" style="display:flex;gap:14px;align-items:flex-start;padding:clamp(16px,2vh,24px);flex:1">
+        <div style="font-size:1.6rem;flex-shrink:0"></div>
+        <div style="font-size:clamp(.85rem,1.1vw,.95rem);color:var(--dim);line-height:1.7"><strong style="color:var(--white)">Coimbatore-born, India-focused.</strong> A dedicated founding team of 3 — Sanjay (CEO), Swetha (Operations), Akshaya (CXO) — built XpertDev AI specifically to give every local business the powerful tech edge they deserve.</div>
+      </div>
+      <div class="card" style="display:flex;gap:14px;align-items:flex-start;padding:clamp(16px,2vh,24px);flex:1">
+        <div style="font-size:1.6rem;flex-shrink:0"></div>
+        <div style="font-size:clamp(.85rem,1.1vw,.95rem);color:var(--dim);line-height:1.7"><strong style="color:var(--white)">We walk in, not just log in.</strong> We personally visit your business, understand exactly how your operations work from the inside, and build tools that actually fit — no templates.</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:clamp(10px,1.5vh,16px)">
+      <div style="font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--purple);margin-bottom:2px">What Makes Us Different</div>
+      <div class="card" style="display:flex;gap:14px;align-items:flex-start;padding:clamp(16px,2vh,24px);flex:1">
+        <div style="font-size:1.6rem;flex-shrink:0"></div>
+        <div style="font-size:clamp(.85rem,1.1vw,.95rem);color:var(--dim);line-height:1.7"><strong style="color:var(--white)">Speed + Affordability.</strong> Go live locally in 1–2 weeks starting from ₹2,000/mo. No hidden lock-ins. No absurdly bloated agency fees. Pure results.</div>
+      </div>
+      <div class="card" style="display:flex;gap:14px;align-items:flex-start;padding:clamp(16px,2vh,24px);flex:1">
+        <div style="font-size:1.6rem;flex-shrink:0"></div>
+        <div style="font-size:clamp(.85rem,1.1vw,.95rem);color:var(--dim);line-height:1.7"><strong style="color:var(--white)">Full-stack growth partner.</strong> From building your custom website and AI WhatsApp chatbot to running comprehensive Google Ads & SEO — we successfully handle it all under one roof.</div>
+      </div>
+      <div class="card" style="display:flex;gap:14px;align-items:flex-start;padding:clamp(16px,2vh,24px);flex:1">
+        <div style="font-size:1.6rem;flex-shrink:0"></div>
+        <div style="font-size:clamp(.85rem,1.1vw,.95rem);color:var(--dim);line-height:1.7"><strong style="color:var(--white)">We speak your language.</strong> Tamil, Hindi, English — on-site store visits, real human 24/7 support, and powerful tools built for everyday business owners, not IT managers.</div>
+      </div>
+    </div>
+  </div>
+  <div class="a" style="padding:clamp(9px,1.3vh,13px) clamp(12px,1.7vw,18px);background:linear-gradient(135deg,rgba(0,200,248,.08),rgba(155,92,246,.04));border:1px solid rgba(0,200,248,.14);border-top:1px solid rgba(0,200,248,.25);border-radius:9px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:clamp(7px,1vh,12px);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.3)">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div style="font-size:.65rem;color:var(--muted)">hello@xpertdevai.com</div>
+      <div class="vd" style="height:14px"></div>
+      <div style="font-size:.65rem;color:var(--muted)"> Coimbatore, Tamil Nadu</div>
+      <div class="vd" style="height:14px"></div>
+      <div style="font-size:.65rem;color:var(--green)"> +91 91508 02851</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-g" style="font-size:.78rem;padding:.5rem 1.2rem"> Start a Project</button>
+      <button class="btn-o" style="font-size:.78rem;padding:.5rem 1.2rem"> Book a Free Call</button>
+    </div>
+  </div>
+  <div class="a" style="border-top:1px solid var(--border);padding-top:clamp(7px,1vh,11px);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:7px">
+    <div style="font-family:var(--fd);font-size:.76rem;font-weight:700;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent">XpertDev AI</div>
+    <div style="font-size:.6rem;color:var(--muted)">© 2025 XpertDev AI · Coimbatore · Crafted with Intelligence</div>
+    <div style="display:flex;gap:7px">
+      <a href="#" style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.65rem;color:var(--muted);text-decoration:none;font-weight:700;transition:all .3s" onmouseover="this.style.borderColor='rgba(0,200,248,.3)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">in</a>
+      <a href="#" style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--muted);text-decoration:none;transition:all .3s" onmouseover="this.style.borderColor='rgba(155,92,246,.3)';this.style.color='var(--purple)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">⌥</a>
+    </div>
+  </div>
+</div></div>
+
+</div><!-- /deck -->
+
+<div id="nb">
+  <button class="nb-btn" id="pb">&#8592;</button>
+  <div class="nb-sep"></div>
+  <div id="dots" style="display:flex;gap:5px"></div>
+  <div class="nb-sep"></div>
+  <button class="nb-btn" id="nx">&#8594;</button>
+  <div class="nb-sep"></div>
+  <button class="nb-btn" id="fs" style="padding:0 12px;font-size:.65rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)">Present</button>
+</div>
+
+<script>
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-r');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function aR(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(aR)})();
+document.querySelectorAll('button,a,.card,.biz,.tc,.sr').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='16px';cur.style.height='16px';cur.style.background='var(--purple)';ring.style.transform='translate(-50%,-50%) scale(1.5)'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='9px';cur.style.height='9px';cur.style.background='var(--blue)';ring.style.transform='translate(-50%,-50%) scale(1)'});
+});
+
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+let W,H,pts=[];
+function rsz(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+rsz();window.addEventListener('resize',rsz);
+for(let i=0;i<75;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.1+.3,c:Math.random()>.5?'0,200,248':'155,92,246',a:Math.random()*.25+.05});
+(function draw(){
+  ctx.clearRect(0,0,W,H);
+  pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${p.c},${p.a})`;ctx.fill()});
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<95){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(0,200,248,${.035*(1-d/95)})`;ctx.lineWidth=.5;ctx.stroke()}}
+  requestAnimationFrame(draw)
+})();
+
+const slides=[...document.querySelectorAll('.slide')];
+const total=slides.length;
+let cur2=0,anim=false;
+const dotsEl=document.getElementById('dots');
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='dn'+(i===0?' on':'');d.addEventListener('click',()=>goTo(i));dotsEl.appendChild(d)});
+const dots=[...dotsEl.querySelectorAll('.dn')];
+
+function goTo(n){
+  if(anim||n===cur2||n<0||n>=total)return;
+  anim=true;
+  const fwd=n>cur2;
+  const prev=slides[cur2],next=slides[n];
+  prev.classList.remove('active');prev.classList.add('prev');
+  prev.style.transform=fwd?'translateX(-65px)':'translateX(65px)';prev.style.opacity='0';
+  next.style.transform=fwd?'translateX(65px)':'translateX(-65px)';next.style.opacity='0';
+  next.classList.add('active');
+  requestAnimationFrame(()=>{next.style.transform='translateX(0)';next.style.opacity='1'});
+  dots[cur2].classList.remove('on');dots[n].classList.add('on');
+  cur2=n;
+  if(n===6){setTimeout(()=>{slides[6].querySelectorAll('.pbf').forEach(f=>{f.style.width=f.dataset.w+'%'})},300)}
+  setTimeout(()=>{prev.classList.remove('prev');prev.style.transform='translateX(55px)';prev.style.opacity='0';anim=false},480);
+}
+
+document.getElementById('pb').addEventListener('click',()=>goTo(cur2-1));
+document.getElementById('nx').addEventListener('click',()=>goTo(cur2+1));
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(cur2+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(cur2-1)});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{const dx=tx-e.changedTouches[0].clientX;if(Math.abs(dx)>45)dx>0?goTo(cur2+1):goTo(cur2-1)},{passive:true});
+let wt=0;
+document.addEventListener('wheel',e=>{const now=Date.now();if(now-wt<720)return;wt=now;e.deltaY>0?goTo(cur2+1):goTo(cur2-1)},{passive:true});
+const fsBtn=document.getElementById('fs');
+fsBtn.addEventListener('click',()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen()});
+document.addEventListener('fullscreenchange',()=>{fsBtn.innerText=document.fullscreenElement?'Exit ':'Present'});
+</script>
+</body>
+</html>
